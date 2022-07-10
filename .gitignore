@@ -1,0 +1,5 @@
+# ignore ALL .html files
+*.html
+
+# ignore ALL files in ANY directory named temp
+static/ 
