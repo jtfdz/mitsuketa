@@ -8,13 +8,17 @@ def send_submissions(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = SubmissionForm(request.POST)
+        # print(request.POST.get('name_of_the_element'))
         # check whether it's valid:
+        print(request.POST)
         if form.is_valid():
+            form.save()
+            # selected = form.cleaned_data.get("problem")
             # process the data in form.cleaned_data as required
             # ...
-            # redirect to a new URL:
             messages.success(request, f'submission accepted!')
-            return redirect('home')
+            # redirect to a new URL:
+            return redirect('send_submissions')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = SubmissionForm()
