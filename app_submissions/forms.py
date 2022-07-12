@@ -10,6 +10,12 @@ class SubmissionForm(forms.Form):
     page_name = forms.CharField(label="page's name, no links!", max_length=100)
     comment = forms.CharField(label='anything to add?', max_length=400)
 
+    """ this instead of save() and viceversa
+    class Meta:
+        model = Submission
+        fields = ['problem', 'manga_name', 'page_name', 'comment']
+    """
+
     def save(self):
         data = self.cleaned_data
         submission = Submission(problem=data['problem'], manga_name=data['manga_name'],

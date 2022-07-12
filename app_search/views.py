@@ -12,4 +12,7 @@ def genres(request):
     return render(request, 'app_search/genres.html')
 
 def search(request):
-    return render(request, 'app_search/search.html')
+    context = {
+        'genres': Genre.objects.all(),
+    }
+    return render(request, 'app_search/search.html', context)

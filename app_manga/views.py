@@ -1,31 +1,8 @@
 from django.shortcuts import render
 from .models import Genre # another way of saying: from the same directory
 from django.contrib import messages
-
-random_manga = [
-    {
-    'id_manga': '1',
-    'name': 'snk',
-    'description': 'AND FUCK ZEKE!',
-    'reviews': 391484223,
-    'main_genre': 'shounen',
-    },
-    {
-    'id_manga': '23342',
-    'name': 'tamen de gushi',
-    'description': 'love exists T__T',
-    'reviews': 1271,
-    'main_genre': 'romance',
-    },
-    {
-    'id_manga': '5934',
-    'name': 'therapy game ♥',
-    'description': 'not a single therapy session in sight',
-    'reviews': 554,
-    'main_genre': 'romance',
-    }
-]
-
+from random import choice
+from app_search.models import Manga
 
 carousel = [
     {
@@ -63,9 +40,10 @@ carousel = [
 
 
 def home(request):
+
     context = {
-        'genres': Genre.objects.all()[:3],
-        'random_manga': random_manga,
+        'genres': Genre.objects.order_by('-readers')[:3],
+        'random_manga': Manga.objects.all()[:3],
         'carousel': carousel,
     }
     return render(request, 'app_manga/home.html', context)
