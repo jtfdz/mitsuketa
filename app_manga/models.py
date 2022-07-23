@@ -15,4 +15,4 @@ class Genre(models.Model):
 
     @property
     def image_url(self):
-        return 'img/GENRE_'+ str(self.id_genre) +'.jpg'
+        return 'img/GENRE_'+ str(self.name).split(' ')[0].replace(" ","_") +'.jpg'

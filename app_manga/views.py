@@ -42,12 +42,12 @@ carousel = [
 def home(request):
 
     context = {
+        'last_mangas': Manga.objects.order_by('-last_update')[:10],
         'genres': Genre.objects.order_by('-readers')[:3],
         'random_manga': Manga.objects.all()[:3],
         'carousel': carousel,
     }
     return render(request, 'app_manga/home.html', context)
-
 
 
 def about(request):

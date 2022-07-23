@@ -1,6 +1,7 @@
 # ignore ALL .html files
 *.html
+*.sqlite3
 
-# ignore ALL files in ANY directory named temp
+# ignore ALL files in ANY directory named 
 static/
 templates/
