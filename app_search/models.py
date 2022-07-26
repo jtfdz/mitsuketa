@@ -5,6 +5,15 @@ from django.db.models.signals import m2m_changed
 # Create your models here.
 
 
+def multiple_values_tag(cls, lista, filter_name, filter_query):
+    return cls.filter(
+                        **{filter_query : lista}
+                    ).annotate(
+                        n_tag_list=Count(filter_name)
+                    ).filter(
+                        n_tag_list=len(lista)
+                    )
+
 class Tags(models.Model):
     id_tag = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=20)
@@ -38,6 +47,17 @@ def manager_factory(custom_field):
                     a[self.mtp_field] = clean_a[0]['pages__name']
             return list_count
 
+        def get_dictionary(self):
+            tags_pages = self.all().values(self.mtp_field, 'manga__id_manga')
+            manga_dict = {}
+            for i in tags_pages:
+                manga = str(i.get('manga__id_manga'))
+                tag = i.get(self.mtp_field, [])
+                value = manga_dict.get(manga, set())
+                value.add(tag)
+                manga_dict.update({manga: value})
+            return manga_dict
+
 
     return SearchManager()
 
@@ -68,8 +88,12 @@ class Manga(models.Model):
         return 'img/MANGA_'+ str(self.name).replace(" ","_") +'.jpg'
 
     @classmethod
-    def manga_latest(cls):
-        return cls.objects.order_by('-last_update')[:5]
+    def manga_latest(cls, num_start=0, num_end=0):
+        if num_end:
+            return cls.objects.order_by('-last_update')[num_start:num_end]
+        else:
+            return cls.objects.order_by('-last_update')[num_start:]
+
 
 
 
@@ -82,6 +106,7 @@ class MangaTags(models.Model):
     def __str__(self):
         #tag_list = [i for i in self.tags.name]
         return f'{self.manga}: {self.tags.all()}'
+
 
 class MangaPages(models.Model):
     id_manga_tag = models.BigAutoField(primary_key=True)
