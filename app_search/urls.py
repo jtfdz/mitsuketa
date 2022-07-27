@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('genres', views.genres, name='genres'),
     #path('genre/<int:pk>', views.genre, name='genre'),
+    path('manga/<int:id>', views.manga, name='manga'),
     path('search/', views.search, name='search'), # filter and so on
     re_path(r'''^search/
             (?:page=(?P<page>[0-9]{5}\d+)/)

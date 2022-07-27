@@ -1,14 +1,27 @@
 from django.shortcuts import render
 from app_manga.models import Genre # not used yet
-from .models import Manga
+from .models import Manga, MangaTags
 from .costum_modules.filters import *
+from app_manga.costum_modules.home_data import random_set
 from math import ceil
-
+from random import randrange
 # Create your views here.
 
 def genres(request):
     return render(request, 'app_search/genres.html')
 
+def manga(request, id=1):
+
+    if id == 0:
+        manga_len = Manga.objects.values('id_manga').count()
+        id = randrange(1, manga_len+1)
+
+    context = {
+        'random_manga': Manga.objects.filter(id_manga__in=random_set()),
+        'manga': Manga.objects.filter(id_manga=id)[0],
+        'tags': MangaTags.tags_manager.filter(manga__id_manga=id).values('tags__name'),
+    }
+    return render(request, 'app_search/single_manga.html', context)
 
 def search(request):
 
