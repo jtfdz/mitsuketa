@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from app_manga.models import Genre # not used yet
-from .models import Manga, MangaTags
+from .models import Manga, MangaTags, MangaHost
 from .costum_modules.filters import *
 from app_manga.costum_modules.home_data import random_set
 from math import ceil
@@ -18,9 +18,11 @@ def manga(request, id=1):
 
     context = {
         'random_manga': Manga.objects.filter(id_manga__in=random_set()),
-        'manga': Manga.objects.filter(id_manga=id)[0],
+        'manga': Manga.objects.filter(id_manga=id).first(),
+        'hosts': MangaHost.page_manager.filter(manga__id_manga=id).values('page__name', 'url'),
         'tags': MangaTags.tags_manager.filter(manga__id_manga=id).values('tags__name'),
     }
+
     return render(request, 'app_search/single_manga.html', context)
 
 def search(request):
@@ -57,7 +59,9 @@ def search(request):
     len_qsf = len(qs_filter)
     num_paginas = ceil(len_qsf / 20)
     qs_filter = if_tag_exists(page_filter, qs_filter, f_page)
-    # FALTA: cuando vas a las siguientes páginas manga[:20] etc
+
+    # search auto-complete
+    manga_suggestions = Manga.objects.values('name')
 
 
 
@@ -67,6 +71,7 @@ def search(request):
         'num_paginas': range(num_paginas),
         'status': status_ogw,
         'entered_input': entered_input,
+        'manga_suggestions': manga_suggestions,
     }
 
 

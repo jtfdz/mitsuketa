@@ -1,16 +1,19 @@
 from app_manga.models import Genre
-from ..models import Manga, MangaTags, MangaPages, multiple_values_tag
+from ..models import Manga, MangaTags, MangaHost, multiple_values_tag
 from django.db.models import Q
 from math import ceil
 
 # formatting for tags w multiple values
 def get_filters(obj_manag, name, icon, genres):
     elements = obj_manag.all() if genres else obj_manag.get_relevant()[:15]
+
     search_dictionary = {}
     for n, i in enumerate(elements, 1):
-        index = f"{name}_{n}"
-        search_name = f"{i.name}" if genres else f"{i[name]} ({i['name_count']})"
+        index = f"{name}_{n}" if genres else f"{name}_{i[name]}"
+        search_name = f"{i.name}" if genres else f"{i[name+'__name']} ({i['name_count']})"
         search_dictionary[index] = [search_name, icon]
+
+
     return search_dictionary
 
 # status by original work
@@ -54,7 +57,7 @@ filters = [
     },
     {
         'filter_name': 'host pages',
-        'options': get_filters(MangaPages.pages_manager, 'pages', 'fa-window-restore', False),
+        'options': get_filters(MangaHost.page_manager, 'page', 'fa-window-restore', False),
         'filter_form': 'host'
     },
 ]
@@ -91,6 +94,7 @@ def f_genre(tag, qs):
 
 # tag and host filter share exactly the same code but different manager_factory
 def f_tage(obj_man, tag, qs):
+
     ids = n_tags_ids(tag)
     manga_dict = obj_man.get_dictionary()
     accepted_manga_ids = []
@@ -98,6 +102,7 @@ def f_tage(obj_man, tag, qs):
     for key, value in manga_dict.items():
         if ids.issubset(value):
             accepted_manga_ids.append(key)
+
 
     return qs.filter(id_manga__in=accepted_manga_ids)
 
@@ -107,7 +112,7 @@ def f_tag(tag, qs):
 
 # host filter
 def f_host(tag, qs):
-    return f_tage(MangaPages.pages_manager, tag, qs)
+    return f_tage(MangaHost.page_manager, tag, qs)
 
 # input filter
 def f_input(tag, qs):
